@@ -172,5 +172,19 @@ function render(){
     $('status').className='status '+(ok?'ok':'bad');$('rtemp').textContent=fmt(t,1)+' °C';$('robs').textContent=fmt(d)+' kg/L';$('rcorr').textContent=fmt(d20)+' kg/L';$('meta').textContent=ref.nome+' · '+new Date().toLocaleString('pt-BR')+( $('station').value?' · '+$('station').value:'')+($('operator').value?' · '+$('operator').value:'');function line(s){const p=document.createElement('div');p.textContent=s;$('checks').appendChild(p)}line((okD?'✓':'✕')+' Densidade a 20 °C: '+fmt(limits.min)+' a '+fmt(limits.max)+' kg/L');if(alc!==null)line((okA?'✓':'✕')+' Teor alcoólico estimado: '+fmt(alc,2)+' % m/m (referência: '+fmt(ref.teor_alcoolico_mm.min,1)+' a '+fmt(ref.teor_alcoolico_mm.max,1)+' % m/m)');$('print').disabled=false;$('reportFuel').textContent=ref.nome;$('reportStation').textContent=$('station').value.trim()||'Não informado';$('reportOperator').textContent=$('operator').value.trim()||'Não informado';$('reportDate').textContent=new Date().toLocaleString('pt-BR');$('reportStatus').textContent=ok?'APROVADO':'REPROVADO';$('reportStatus').className='report-verdict '+(ok?'pass':'fail');$('reportChecks').replaceChildren();for(const node of $('checks').children){const p=document.createElement('p');p.textContent=node.textContent;$('reportChecks').appendChild(p)}$('reportTemp').textContent=fmt(t,1)+' °C';$('reportObs').textContent=fmt(d)+' kg/L';$('reportCorr').textContent=fmt(d20)+' kg/L'}catch(e){$('status').textContent='NÃO FOI POSSÍVEL AVALIAR';$('reason').textContent=e.message;$('print').disabled=true}}
 async function carregarJSON(){try{const [a,b]=await Promise.all([fetch('./Tabela_de_densidade.json',{cache:'no-store'}),fetch('./Valores_de_Referencia.json',{cache:'no-store'})]);if(!a.ok||!b.ok)throw Error('Arquivos JSON não encontrados');table=validateTable(await a.json());refs=validateRefs(await b.json());selectOptions();render()}catch(e){table=null;refs=null;$('status').textContent='Não foi possível carregar os JSON';$('reason').textContent='Abra pelo INICIAR_SALGE.bat para ler os arquivos JSON automaticamente. '+e.message;$('print').disabled=true}}for(const id of ['fuel','temp','density','station','operator'])$(id).addEventListener('input',render);$('clear').addEventListener('click',()=>{$('temp').value='';$('density').value='';$('station').value='';$('operator').value='';render()});carregarJSON();
 </script>
+    <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .then(() => {
+          console.log("Salge. preparado para uso offline");
+        })
+        .catch(error => {
+          console.error("Erro no Service Worker:", error);
+        });
+    });
+  }
+</script>
 </body>
 </html>
