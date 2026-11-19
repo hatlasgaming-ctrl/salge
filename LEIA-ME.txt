@@ -1,0 +1,10 @@
+SALGE. — BETA
+
+No Windows, execute INICIAR_SALGE.bat (dois cliques). O navegador abre automaticamente.
+Os arquivos Tabela_de_densidade.json e Valores_de_Referencia.json sao carregados diretamente, sem selecao manual.
+Para alterar dados: edite os JSON, salve e atualize a pagina (F5).
+Mantenha a janela do iniciador aberta enquanto utiliza o aplicativo.
+O servidor local utiliza apenas o PowerShell do Windows, sem Python ou internet.
+Abrir index.html diretamente por file:// nao permite carregar JSON automaticamente devido as restricoes do navegador.
+
+ATENCAO: dados de demonstracao, nao usar para validar combustivel real.

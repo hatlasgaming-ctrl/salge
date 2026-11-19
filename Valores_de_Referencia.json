@@ -1,0 +1,13 @@
+{
+  "versao": "1.0-demo",
+  "tipo": "DEMONSTRACAO",
+  "descricao": "Limites fornecidos pelo usuário para apresentação; não certificados como especificação ANP vigente.",
+  "combustiveis": {
+    "gasolina_comum": {"nome": "Gasolina comum", "tabela": "gasolina", "densidade_20c": {"min": 0.720, "max": 0.758}},
+    "gasolina_aditivada": {"nome": "Gasolina aditivada", "tabela": "gasolina", "densidade_20c": {"min": 0.720, "max": 0.758}},
+    "diesel_s10": {"nome": "Diesel S10", "tabela": "diesel", "densidade_20c": {"min": 0.815, "max": 0.853}},
+    "diesel_s500": {"nome": "Diesel S500", "tabela": "diesel", "densidade_20c": {"min": 0.815, "max": 0.865}},
+    "etanol_comum": {"nome": "Etanol hidratado comum", "tabela": "etanol", "densidade_20c": {"min": 0.8052, "max": 0.8112}, "teor_alcoolico_mm": {"min": 92.5, "max": 94.6}},
+    "etanol_aditivado": {"nome": "Etanol hidratado aditivado", "tabela": "etanol", "densidade_20c": {"min": 0.8052, "max": 0.8112}, "teor_alcoolico_mm": {"min": 92.5, "max": 94.6}}
+  }
+}
