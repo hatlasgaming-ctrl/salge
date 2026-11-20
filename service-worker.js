@@ -5,7 +5,7 @@ const ARQUIVOS = [
   "./",
   "./index.html",
   "./app.json",
-  "./icon-192.png",
+  "./icone.png",
   "./Tabela_de_densidade.json",
   "./Valores_de_Referencia.json"
 ];
