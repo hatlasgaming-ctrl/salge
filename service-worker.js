@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "salge-v1";
+const CACHE_NAME = "salge-v2";
 
 const ARQUIVOS = [
   "./",
@@ -10,42 +10,105 @@ const ARQUIVOS = [
   "./Valores_de_Referencia.json"
 ];
 
+// Instalação: armazena os arquivos para uso offline.
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ARQUIVOS))
-      .then(() => self.skipWaiting())
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+
+      await cache.addAll(ARQUIVOS);
+
+      await self.skipWaiting();
+    })()
   );
 });
 
+// Ativação: remove caches antigos do Salge.
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
+    (async () => {
+      const nomes = await caches.keys();
+
+      await Promise.all(
+        nomes
+          .filter(nome =>
+            nome.startsWith("salge-") &&
+            nome !== CACHE_NAME
+          )
+          .map(nome => caches.delete(nome))
+      );
+
+      await self.clients.claim();
+    })()
   );
 });
 
+// Requisições: busca a versão atualizada primeiro.
 self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
+  const request = event.request;
+  const url = new URL(request.url);
+
+  // Ignora requisições que não são GET.
+  if (request.method !== "GET") return;
+
+  // Evita o erro de cache com chrome-extension://.
+  if (
+    url.protocol !== "http:" &&
+    url.protocol !== "https:"
+  ) {
+    return;
+  }
+
+  // Ignora recursos externos ao Salge.
+  if (url.origin !== self.location.origin) {
+    return;
+  }
 
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        if (response.ok) {
-          const copia = response.clone();
+    (async () => {
+      try {
+        // Busca a versão mais recente no GitHub Pages.
+        const response = await fetch(request);
 
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, copia);
-          });
+        if (response.ok && response.type === "basic") {
+          const cache = await caches.open(CACHE_NAME);
+
+          // Aguarda a gravação no cache.
+          try {
+            await cache.put(
+              request,
+              response.clone()
+            );
+          } catch (error) {
+            console.warn(
+              "Salge: falha ao atualizar o cache:",
+              error
+            );
+          }
         }
 
         return response;
-      })
-      .catch(() => caches.match(event.request))
+
+      } catch (error) {
+        // Sem conexão: tenta usar o arquivo salvo.
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match(request);
+
+        if (cached) {
+          return cached;
+        }
+
+        // Para navegação, tenta abrir a página inicial.
+        if (request.mode === "navigate") {
+          const pagina = await cache.match("./index.html");
+
+          if (pagina) {
+            return pagina;
+          }
+        }
+
+        return Response.error();
+      }
+    })()
   );
 });
