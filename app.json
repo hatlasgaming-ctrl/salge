@@ -1,7 +1,7 @@
 {
     "name": "Salge.",
     "short_name": "Salge.",
-    "start_url": "/",
+    "start_url": "/salge",
     "display": "fullscreen",
     "background_color": "#f6f6f4",
     "theme_color": "#f6f6f4",
